@@ -1,9 +1,12 @@
 {
   "name": "smartcard-reader-example",
   "version": "0.0.0",
+  "main": "app.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng build --base-href ./ && npm run electron",
+    "electron": "electron . --inspect=5858",
+    "start:rebuild": "npm run start && ./node_modules/.bin/electron-rebuild",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -18,7 +21,10 @@
     "@angular/platform-browser": "~12.0.0",
     "@angular/platform-browser-dynamic": "~12.0.0",
     "@angular/router": "~12.0.0",
+    "@types/electron": "^1.6.10",
+    "ngx-electron": "^2.2.0",
     "rxjs": "~6.6.0",
+    "smartcard": "^1.0.46",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
   },
@@ -28,6 +34,8 @@
     "@angular/compiler-cli": "~12.0.0",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
+    "electron": "^16.0.5",
+    "electron-rebuild": "^3.2.5",
     "jasmine-core": "~3.7.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
