@@ -1,5 +1,5 @@
 const {app, BrowserWindow} = require('electron');
-const smartcardReader = require('./smartcard-reader.js');
+const smartcardReader = require('./smartcard-reader/smartcard-reader.main');
 
 const url = require("url");
 const path = require("path");
