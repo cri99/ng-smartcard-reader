@@ -1,7 +1,7 @@
 const {ipcMain} = require('electron');
 const smartcard = require('smartcard');
-const { APDU_COMMAND } = require('./smartcard-reader.data');
-const { SmartCardReaderUtility }  = require('./smartcard-reader.utility');
+
+const { SmartCardReaderProcedures } = require('./smartcard-reader.procedures');
 
 const Devices = smartcard.Devices;
 const Iso7816Application = smartcard.Iso7816Application;
@@ -9,41 +9,6 @@ const Iso7816Application = smartcard.Iso7816Application;
 const devices = new Devices();
 
 let userDataFromCardReader = null;
-
-
-const getPersonalDataFromCard = (application) => {
-  return application
-  .issueCommand(APDU_COMMAND.SELECT_MF)
-  .then((response) => {
-      console.info(
-      `Select MF Response: '${response}' '${response.meaning()}'`
-      );
-      return application.issueCommand(APDU_COMMAND.SELECT_DF1);
-  })
-  .then((response) => {
-      console.info(
-      `Select DF1 Response: '${response}' '${response.meaning()}'`
-      );
-      return application.issueCommand(APDU_COMMAND.SELECT_EF_PERS);
-  
-  })
-  .then((response) => {
-      console.info(
-      `Select EF_PERS Response: '${response}' '${response.meaning()}'`
-      );
-      return application.issueCommand(APDU_COMMAND.READ_BIN);
-  
-  })
-  .then((response) => {
-      const userDataFromCardReader = SmartCardReaderUtility.decodeUserData(response.buffer);
-      console.info("New user data from card reader:", userDataFromCardReader);
-      return userDataFromCardReader;
-  })
-  .catch((error) => {
-      console.error('Error:', error, error.stack);
-  });
-};
-
 
 const init = () => {
 
@@ -65,10 +30,22 @@ const init = () => {
       });
   
       const application = new Iso7816Application(card);
-      getPersonalDataFromCard(application).then((userData) => {
+      
+      // Chiamata procedure a cascata -> Le procedure non possono andare in parallelo!
+      SmartCardReaderProcedures.readPersonalData(application)
+      .then((userData) => {
         userDataFromCardReader = userData;
+      })
+      .then(_ => {
+        return SmartCardReaderProcedures.readPublicKey(application).then(publicKey => { 
+          console.info("Public Key: ", publicKey)
+        });
+      })
+      .then(_ => {
+        SmartCardReaderProcedures.readCertificate(application).then(certificate => { 
+          console.info("Certificate: ", certificate);
+        });
       });
-        
     });
 
     device.on('card-removed', (event) => {

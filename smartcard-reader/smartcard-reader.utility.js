@@ -4,8 +4,7 @@ const decodeUserData = (encodedData) => {
     
   let encodedDataAsString = encodedData;
   if(encodedData instanceof Uint8Array) {
-    const textEncoder = new TextDecoder("utf-8");
-    encodedDataAsString = textEncoder.decode(encodedData);
+    encodedDataAsString = binToHex(encodedData);
   }
 
   console.info('Decoding string: ' + encodedDataAsString);
@@ -57,9 +56,23 @@ const readNextData = (encodedData, startPos, isDate, prefixLength) => {
 }
 
 
+const binToHex = (arrayBuffer) => {
+  const textEncoder = new TextDecoder("utf-8");
+  return textEncoder.decode(arrayBuffer);
+} 
+
+
+const removeTrailingZeros = (stringWithTrailingZeros) => {
+  const stringReversedAsArray = stringWithTrailingZeros.split('').reverse();
+  const firstCharIndexDifferentFromZero = stringReversedAsArray.findIndex(char => char !== '0');
+  stringReversedAsArray.splice(0, firstCharIndexDifferentFromZero);
+  return stringReversedAsArray.reverse().join('');
+}
 
 module.exports = {
     SmartCardReaderUtility: {
-      decodeUserData
+      decodeUserData,
+      binToHex,
+      removeTrailingZeros
     }
 }
