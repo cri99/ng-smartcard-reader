@@ -81,6 +81,43 @@ const readPersonalData = (application) => {
 
 
 
+  verifyPin = (application, pin) => {
+    printStartNewProcedureMessage("START VERIFY PIN");
+  
+    return application
+    .issueCommand(APDU_COMMAND.SELECT_MF)
+    .then((response) => {
+        console.info(`Select MF Response: '${response.meaning()}'`);
+        return application.issueCommand(APDU_COMMAND.VERIFY_PIN(pin));
+    })
+    .then((response) => {
+      console.info(`Verify PIN Response: '${response.meaning()}'`);
+      return response
+    })
+    .catch((error) => {
+        console.error('Error:', error, error.stack);
+    });
+  }
+
+
+  readRemainingPinTries = (application) => {
+    printStartNewProcedureMessage("START READ REMAINING PIN TRIES");
+  
+    return application
+    .issueCommand(APDU_COMMAND.SELECT_MF)
+    .then((response) => {
+        console.info(`Select MF Response: '${response.meaning()}'`);
+        return application.issueCommand(APDU_COMMAND.REMAINING_PIN_TRIES);
+    })
+    .then((response) => {
+      console.info(`Remaining PIN tries Response: '${response.meaning()}'`);
+      return +response.data.slice(3, 4);
+    })
+    .catch((error) => {
+        console.error('Error:', error, error.stack);
+    });
+  }
+
 
 
 
@@ -111,21 +148,27 @@ const readPersonalData = (application) => {
       console.info(
         `READ RECORD: '${response.meaning()}'`
       );
-      return response.data;
+      return response.data.slice(0, -4);
     })
     .catch((error) => {
         console.error('Error:', error, error.stack);
     });
   };
 
+
+
   printStartNewProcedureMessage = (procedureName) => {
     console.info("\n\n***" + procedureName + "***\n")
   }
+
+
 
 module.exports = {
    SmartCardReaderProcedures: {
        readPersonalData,
        readPublicKey,
-       readCertificate
+       readCertificate,
+       verifyPin,
+       readRemainingPinTries
    }
 }

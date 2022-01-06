@@ -42,10 +42,24 @@ const init = () => {
         });
       })
       .then(_ => {
-        SmartCardReaderProcedures.readCertificate(application).then(certificate => { 
+        return SmartCardReaderProcedures.readCertificate(application).then(certificate => { 
           console.info("Certificate: ", certificate);
         });
-      });
+      })
+      .then(_ => {
+        return SmartCardReaderProcedures.readRemainingPinTries(application)
+        .then(remainingPinTries => {
+          console.info("Remaining PIN Tries: ", remainingPinTries);
+          if(remainingPinTries > 0) {
+            /* ATTENZIONE: RISCHIO DI BLOCCO PIN 
+            return SmartCardReaderProcedures.verifyPin(application, '1234').then(verifyPinResponse => { 
+              console.info("Verify PIN Response: ", verifyPinResponse);
+            });
+            */
+          }
+        });
+      })
+      
     });
 
     device.on('card-removed', (event) => {

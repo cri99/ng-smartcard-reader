@@ -61,6 +61,10 @@ const binToHex = (arrayBuffer) => {
   return textEncoder.decode(arrayBuffer);
 } 
 
+const asciiToHex = (asciiText) => {
+    Array(...asciiText).map(asciiChar => +Number(asciiChar.charCodeAt()).toString(16))
+}
+
 
 const removeTrailingZeros = (stringWithTrailingZeros) => {
   const stringReversedAsArray = stringWithTrailingZeros.split('').reverse();
@@ -73,6 +77,7 @@ module.exports = {
     SmartCardReaderUtility: {
       decodeUserData,
       binToHex,
-      removeTrailingZeros
+      removeTrailingZeros,
+      asciiToHex
     }
 }
