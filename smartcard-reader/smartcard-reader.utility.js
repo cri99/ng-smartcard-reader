@@ -1,7 +1,7 @@
-const { INFOS_TO_EXTRACT } = require('./smartcard-reader.data');
+const { SmartCardReaderData } = require('./smartcard-reader.data');
 
 const decodeUserData = (encodedData) => {
-    
+  
   let encodedDataAsString = encodedData;
   if(encodedData instanceof Uint8Array) {
     encodedDataAsString = binToHex(encodedData);
@@ -12,7 +12,7 @@ const decodeUserData = (encodedData) => {
   const userData = {};
   let startPos = 6;
 
-  INFOS_TO_EXTRACT
+  SmartCardReaderData.INFOS_TO_EXTRACT
     .sort((a, b) => a.order - b.order)
     .forEach(info => {
       const readNextDataResult = readNextData(encodedDataAsString, startPos, info.isDate, info.lengthPrefix);
@@ -62,7 +62,7 @@ const binToHex = (arrayBuffer) => {
 } 
 
 const asciiToHex = (asciiText) => {
-    Array(...asciiText).map(asciiChar => +Number(asciiChar.charCodeAt()).toString(16))
+    return Array(...asciiText).map(asciiChar => +Number(asciiChar.charCodeAt()).toString(16))
 }
 
 
@@ -81,3 +81,4 @@ module.exports = {
       asciiToHex
     }
 }
+

@@ -1,5 +1,7 @@
-const { APDU_COMMAND } = require('./smartcard-reader.data');
+const { SmartCardReaderData } = require('./smartcard-reader.data');
 const { SmartCardReaderUtility }  = require('./smartcard-reader.utility');
+
+const APDU_COMMAND = SmartCardReaderData.APDU_COMMAND;
 
 /**
  * Legge e restituisce i dati personali dell'intestatario della smartcard
@@ -157,6 +159,28 @@ const readPersonalData = (application) => {
 
 
 
+
+  mseSetDigitalSignatureMode = (application, pin) => {
+    printStartNewProcedureMessage("START MSE SET DS");
+  
+    return application
+    .issueCommand(APDU_COMMAND.SELECT_MF)
+    .then((response) => {
+        console.info(`Select MF Response: '${response.meaning()}'`);
+        return application.issueCommand(APDU_COMMAND.MSE.SET_DIGITAL_SIGNATURE);
+    })
+    .then((response) => {
+      console.info(`MSE SET DS Response: '${response.meaning()}'`);
+      return response
+    })
+    .catch((error) => {
+        console.error('Error:', error, error.stack);
+    });
+  }
+
+
+
+
   printStartNewProcedureMessage = (procedureName) => {
     console.info("\n\n***" + procedureName + "***\n")
   }
@@ -169,6 +193,7 @@ module.exports = {
        readPublicKey,
        readCertificate,
        verifyPin,
-       readRemainingPinTries
+       readRemainingPinTries,
+       mseSetDigitalSignatureMode
    }
 }

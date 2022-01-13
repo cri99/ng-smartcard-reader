@@ -36,6 +36,7 @@ const init = () => {
       .then((userData) => {
         userDataFromCardReader = userData;
       })
+      
       .then(_ => {
         return SmartCardReaderProcedures.readPublicKey(application).then(publicKey => { 
           console.info("Public Key: ", publicKey)
@@ -46,18 +47,27 @@ const init = () => {
           console.info("Certificate: ", certificate);
         });
       })
+      
       .then(_ => {
         return SmartCardReaderProcedures.readRemainingPinTries(application)
         .then(remainingPinTries => {
           console.info("Remaining PIN Tries: ", remainingPinTries);
           if(remainingPinTries > 0) {
-            /* ATTENZIONE: RISCHIO DI BLOCCO PIN 
-            return SmartCardReaderProcedures.verifyPin(application, '1234').then(verifyPinResponse => { 
-              console.info("Verify PIN Response: ", verifyPinResponse);
-            });
+            
+            // ATTENZIONE: RISCHIO DI BLOCCO PIN 
+            
+             //return SmartCardReaderProcedures.verifyPin(application, '1234').then(verifyPinResponse => { 
+             // console.info("Verify PIN Response: ", verifyPinResponse);
+            // });
+            
+/*
+            SmartCardReaderProcedures.mseSetDigitalSignatureMode(application).then(mseSetResponse => {
+              console.log(mseSetResponse)
+            })
             */
           }
         });
+        
       })
       
     });
